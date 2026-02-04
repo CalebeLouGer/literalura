@@ -1,5 +1,6 @@
-package br.com.alura.literalura.model;
+package br.com.alura.literalura.model.autor;
 
+import br.com.alura.literalura.model.livro.Livro;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

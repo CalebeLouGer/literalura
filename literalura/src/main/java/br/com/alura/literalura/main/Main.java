@@ -1,6 +1,10 @@
 package br.com.alura.literalura.main;
 
 import br.com.alura.literalura.model.*;
+import br.com.alura.literalura.model.autor.Autor;
+import br.com.alura.literalura.model.autor.DadosAutores;
+import br.com.alura.literalura.model.livro.DadosLivros;
+import br.com.alura.literalura.model.livro.Livro;
 import br.com.alura.literalura.repository.AutorRepository;
 import br.com.alura.literalura.repository.LivroRepository;
 import br.com.alura.literalura.service.ConsumoApi;

@@ -1,5 +1,6 @@
-package br.com.alura.literalura.model;
+package br.com.alura.literalura.model.livro;
 
+import br.com.alura.literalura.model.autor.Autor;
 import jakarta.persistence.*;
 
 @Entity

@@ -1,4 +1,4 @@
-package br.com.alura.literalura.model;
+package br.com.alura.literalura.model.autor;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
