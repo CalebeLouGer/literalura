@@ -17,9 +17,11 @@ public class Livro {
     public Livro(){}
 
     public Livro(DadosLivros dadosLivros){
-        this.idioma = dadosLivros.idioma();
-        this.numeroDownloads = dadosLivros.numeroDownloads();
         this.titulo = dadosLivros.titulo();
+        this.numeroDownloads = dadosLivros.numeroDownloads();
+        if (dadosLivros.idioma() != null && !dadosLivros.idioma().isEmpty()) {
+            this.idioma = dadosLivros.idioma().get(0);
+        }
     }
 
     public String getTitulo() {
@@ -67,6 +69,7 @@ public class Livro {
         return "Nome: " + titulo + '\n' +
                 "Autor: " + autor + '\n' +
                 "Idioma: " + idioma + '\n' +
-                "Número de Downloads: " + numeroDownloads;
+                "Número de Downloads: " + numeroDownloads + '\n' +
+                "==============================================";
     }
 }

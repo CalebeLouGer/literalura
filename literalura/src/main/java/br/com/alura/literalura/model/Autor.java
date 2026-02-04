@@ -11,6 +11,7 @@ public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String nome;
     private Integer anoNascimento;
     private Integer anoFalecimento;
     @OneToMany(mappedBy = "autor",  cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -19,8 +20,17 @@ public class Autor {
     public Autor(){}
 
     public Autor(DadosAutores dadosAutores){
+        this.nome = dadosAutores.nome();
         this.anoFalecimento = dadosAutores.anoFalecimento();
         this.anoNascimento = dadosAutores.anoNascimento();
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public Long getId() {
@@ -53,5 +63,10 @@ public class Autor {
 
     public void setLivrosList(List<Livro> livrosList) {
         this.livrosList = livrosList;
+    }
+
+    @Override
+    public String toString() {
+        return nome;
     }
 }

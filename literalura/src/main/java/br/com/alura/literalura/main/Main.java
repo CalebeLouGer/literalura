@@ -1,24 +1,31 @@
 package br.com.alura.literalura.main;
 
-import br.com.alura.literalura.model.DadosLivros;
-import br.com.alura.literalura.model.Livro;
+import br.com.alura.literalura.model.*;
+import br.com.alura.literalura.repository.AutorRepository;
 import br.com.alura.literalura.repository.LivroRepository;
 import br.com.alura.literalura.service.ConsumoApi;
 import br.com.alura.literalura.service.ConverteDados;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Scanner;
 
+@Component
 public class Main {
 
     private Scanner leitura = new Scanner(System.in);
     private ConsumoApi consumo = new ConsumoApi();
     private ConverteDados conversor = new ConverteDados();
     private final String ENDERECO = "https://gutendex.com/books/?search=";
+    @Autowired
+    private LivroRepository livroRepository;
+    @Autowired
+    private AutorRepository autorRepository;
 
-    private LivroRepository repository;
-    public Main(LivroRepository repository){
-        this.repository = repository;
-    }
+
+    private List<Livro> livrosList;
     public void exibirMenu(){
         var opcao = -1;
         while (opcao != 0) {
@@ -54,14 +61,41 @@ public class Main {
                     listarLivrosEmIdioma();
                     break;
                 case 0:
-                    System.out.println("Saindo ...");
+                    System.out.println("Saindo...");
+                    System.exit(0);
                     break;
                 default:
-                    System.out.println("Opção Inválida! Tente Novamente.");
-                    break;
+                    System.out.println("Opção Inválida!");
             }
         }
+    }
 
+    private void buscarLivroWeb() {
+        List<DadosLivros> livros = getDadosLivros();
+        for (DadosLivros dados : livros) {
+            Livro livro = new Livro(dados);
+            if (dados.autor() != null && !dados.autor().isEmpty()) {
+                DadosAutores dadosAutor = dados.autor().get(0);
+                Autor autor = autorRepository.findByNome(dadosAutor.nome())
+                        .orElseGet(() -> autorRepository.save(new Autor(dadosAutor)));
+                livro.setAutor(autor);
+                autor.getLivrosList().add(livro);
+            }
+            livroRepository.save(livro);
+        }
+    }
+    private List<DadosLivros> getDadosLivros(){
+        System.out.println("Informe o nome do LIVRO para a Busca: ");
+        var buscaLivro = leitura.nextLine();
+        var json = consumo.obterDados(ENDERECO + buscaLivro.replace(" ", "+"));
+        GutendexResponse resposta = conversor.obterDados(json, GutendexResponse.class);
+        return resposta.results();
+    }
+    private void listarLivrosRegistrados() {
+        livrosList = livroRepository.findAll();
+        livrosList.stream()
+                .sorted(Comparator.comparing(Livro::getTitulo))
+                .forEach(System.out::println);
     }
 
     private void listarLivrosEmIdioma() {
@@ -76,22 +110,5 @@ public class Main {
 
     }
 
-    private void listarLivrosRegistrados() {
 
-    }
-
-    private void buscarLivroWeb() {
-        DadosLivros dadosLivros = getDadosLivros();
-        Livro livro = new Livro(dadosLivros);
-        repository.save(livro);
-        System.out.println(livro);
-    }
-
-    private DadosLivros getDadosLivros(){
-        System.out.println("Informe o nome do LIVRO para a Busca: ");
-        var buscaLivro = leitura.nextLine();
-        var json = consumo.obterDados(ENDERECO + buscaLivro.replace(" ", "%20"));
-        DadosLivros dadosLivros = conversor.obterDados(json, DadosLivros.class);
-        return dadosLivros;
-    }
 }
