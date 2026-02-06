@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 @Component
@@ -30,6 +31,9 @@ public class Main {
 
 
     private List<Livro> livrosList;
+    private List<Autor> autorList;
+    private Optional<Livro> livroOptional;
+
     public void exibirMenu(){
         var opcao = -1;
         while (opcao != 0) {
@@ -84,8 +88,11 @@ public class Main {
                         .orElseGet(() -> autorRepository.save(new Autor(dadosAutor)));
                 livro.setAutor(autor);
                 autor.getLivrosList().add(livro);
+            }else {
+                System.out.println("Autor ou Livro não existem.");
             }
             livroRepository.save(livro);
+            System.out.println(livro);
         }
     }
     private List<DadosLivros> getDadosLivros(){
@@ -102,17 +109,48 @@ public class Main {
                 .forEach(System.out::println);
     }
 
-    private void listarLivrosEmIdioma() {
-
+    private void listarAutoresRegistrados() {
+        autorList = autorRepository.findAll();
+        autorList.stream()
+                .sorted(Comparator.comparing(Autor::getNome))
+                .forEach(System.out::println);
     }
 
     private void listarAutoresVivosEmAno() {
+        System.out.println("Informe a partir de que ANO que deseja: ");
+        int anoBuscado = leitura.nextInt();
+        leitura.nextLine();
 
+        List<Autor> autorData = autorRepository.autoresPorDeterminadoAno(anoBuscado);
+        if (autorData.isEmpty()) {
+            System.out.println("Nenhum autor encontrado.");
+            return;
+        }
+        autorData.forEach(a ->
+                System.out.printf("Ano de Nascimento: %s | Ano de Falecimento: %s | Nome: %s\n",
+                        a.getAnoNascimento(),
+                        a.getAnoFalecimento(),
+                        a.getNome()));
     }
 
-    private void listarAutoresRegistrados() {
-
+    private void listarLivrosEmIdioma() {
+        System.out.println("Informe a SIGLA do Idioma que deseja: ");
+        var idiomaBuscado = leitura.nextLine();
+        livrosList = livroRepository.findByIdioma(idiomaBuscado);
+        livrosList.stream()
+                .sorted(Comparator.comparing(Livro::getTitulo))
+                .forEach(System.out::println);
     }
 
+    private void buscarLivroPorTitulo(){
+        System.out.println("Infome o Título do Livro a ser Buscado: ");
+        var livroBuscado = leitura.nextLine();
+        livroOptional = livroRepository.findByTituloContainingIgnoreCase(livroBuscado);
 
+        if (livroOptional.isPresent()){
+            System.out.println(livroOptional.get());
+        }else{
+            System.out.println("Livro não Encontrado!");
+        }
+    }
 }

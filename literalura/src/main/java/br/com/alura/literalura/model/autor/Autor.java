@@ -4,7 +4,9 @@ import br.com.alura.literalura.model.livro.Livro;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "autores")
@@ -68,6 +70,14 @@ public class Autor {
 
     @Override
     public String toString() {
-        return nome;
+        String nomesLivros = livrosList.stream()
+                .map(Livro::getTitulo)
+                .collect(Collectors.joining(" | "));
+
+        return "Nome: " + nome + '\n' +
+                "Ano de Nascimento: " + anoNascimento + '\n' +
+                "Ano de Falecimento: " + anoFalecimento + '\n' +
+                "Livros: \n{" + nomesLivros + "} " + '\n' +
+                "==================================================";
     }
 }
